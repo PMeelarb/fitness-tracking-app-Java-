@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กู้คืนรหัสผ่านด้วย OTP | Fitness Room</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* พื้นหลังสีเทาอ่อน */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .forgot-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 5px solid #ffb900; /* ขอบบนสีเหลือง */
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .title-icon { 
+            font-size: 3rem; 
+            color: #ffb900; /* ไอคอนสีเหลือง */
+            margin-bottom: 10px; 
+        }
+        .card-title { 
+            font-size: 1.5rem; 
+            color: #333; /* หัวข้อสีเข้ม */
+            margin-bottom: 5px; 
+            font-weight: 600; 
+        }
+        .card-subtitle { 
+            font-size: 0.9rem; 
+            color: #666; 
+            margin-bottom: 25px; 
+        }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group input {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;
+            font-family: 'Sarabun', sans-serif; box-sizing: border-box; outline: none;
+        }
+        .input-group input:focus { 
+            border-color: #ffb900; /* กรอบตอนพิมพ์สีเหลือง */
+            box-shadow: 0 0 5px rgba(255, 185, 0, 0.3);
+        }
+
+        .btn-action {
+            width: 100%; padding: 12px; 
+            background-color: #ffb900; /* ปุ่มสีเหลือง */
+            color: #333; /* ตัวหนังสือสีเข้ม */
+            border: none; border-radius: 5px; 
+            font-size: 1rem; font-weight: bold;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-action:hover { 
+            background-color: #e0a800; /* สีเข้มขึ้นตอนชี้ */
+        }
+        
+        .step-container { display: none; }
+        .step-container.active { display: block; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .otp-display {
+            font-size: 1.5rem; letter-spacing: 5px; text-align: center;
+            margin-bottom: 10px; font-weight: bold; color: #333;
+        }
+
+        .back-link {
+            display: block; margin-top: 20px; font-size: 0.9rem; 
+            color: #666; text-decoration: none;
+        }
+        .back-link:hover {
+            color: #ffb900;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="forgot-card">
+        
+        <div id="step-1" class="step-container active">
+            <div class="title-icon"><i class="fas fa-user-check"></i></div>
+            <div class="card-title">ลืมรหัสผ่าน</div>
+            <div class="card-subtitle">กรอกข้อมูลเพื่อรับรหัส OTP</div>
+            <div class="input-group">
+                <input type="text" id="verify-username" maxlength="8" placeholder="รหัสนักศึกษา (เช่น B6xxxxxx)" onkeyup="this.value = this.value.toUpperCase()">
+            </div>
+            <div class="input-group">
+                <input type="text" id="verify-fullname" placeholder="ชื่อ-นามสกุล (ที่สมัครไว้)">
+            </div>
+            <div class="input-group">
+                <input type="email" id="verify-email" placeholder="อีเมลสำหรับรับ OTP (เช่น name@sut.ac.th)">
+            </div>
+            <button class="btn-action" onclick="sendOTP()">ส่งรหัส OTP</button>
+        </div>
+
+        <div id="step-2" class="step-container">
+            <div class="title-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <div class="card-title">ยืนยันตัวตน</div>
+            <div class="card-subtitle">กรอกรหัส 6 หลักที่ส่งไปยังอีเมลของคุณ</div>
+            <div class="input-group">
+                <input type="text" id="input-otp" maxlength="6" placeholder="รหัส OTP 6 หลัก" style="text-align:center; font-size:1.2rem; letter-spacing:3px;">
+            </div>
+            <button class="btn-action" onclick="verifyOTP()">ยืนยัน OTP</button>
+            <p style="font-size:0.8rem; color:#888; margin-top:10px; cursor:pointer;" onclick="resendOTP()">ส่งรหัสอีกครั้ง</p>
+        </div>
+
+        <div id="step-3" class="step-container">
+            <div class="title-icon"><i class="fas fa-key"></i></div>
+            <div class="card-title">ตั้งรหัสผ่านใหม่</div>
+            <div class="card-subtitle">กำหนดรหัสผ่านใหม่ของคุณ</div>
+            <div class="input-group">
+                <input type="password" id="new-password" placeholder="รหัสผ่านใหม่ (8 ตัวอักษรขึ้นไป)">
+            </div>
+            <div class="input-group">
+                <input type="password" id="confirm-new-password" placeholder="ยืนยันรหัสผ่านใหม่">
+            </div>
+            <button class="btn-action" onclick="saveNewPassword()">บันทึกรหัสผ่าน</button>
+        </div>
+
+        <a href="login.html" class="back-link">← กลับไปหน้าล็อกอิน</a>
+    </div>
+
+    <script>
+        let generatedOTP = null;
+        let verifiedUserIndex = -1; // เก็บตำแหน่ง user ที่เจอใน DB
+
+        // --- Step 1: ตรวจสอบ user และส่ง OTP ---
+        function sendOTP() {
+            const username = document.getElementById('verify-username').value.trim().toUpperCase();
+            const fullname = document.getElementById('verify-fullname').value.trim();
+            const email = document.getElementById('verify-email').value.trim();
+
+            if(!username || !fullname || !email) {
+                alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+                return;
+            }
+
+            // ค้นหาใน DB (LocalStorage)
+            let usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
+            verifiedUserIndex = usersDB.findIndex(u => u.username === username && u.fullname === fullname);
+
+            if (verifiedUserIndex !== -1) {
+                // เจอ user -> สร้าง OTP 6 หลัก
+                generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // 🔥 จำลองการส่งอีเมล (Alert ขึ้นมาแทน)
+                alert(`📨 [ระบบจำลอง Email Server]\n\nรหัส OTP สำหรับเปลี่ยนรหัสผ่านคือ: ${generatedOTP}\n\n(รหัสถูกส่งไปที่ ${email})`);
+                
+                // ไปหน้าถัดไป
+                changeStep(2);
+            } else {
+                alert("❌ ไม่พบข้อมูลในระบบ\nตรวจสอบ รหัสนักศึกษา หรือ ชื่อ-นามสกุล อีกครั้ง");
+            }
+        }
+
+        // --- Step 2: ตรวจ OTP ---
+        function verifyOTP() {
+            const inputOTP = document.getElementById('input-otp').value.trim();
+            if (inputOTP === generatedOTP) {
+                alert("✅ ยืนยันตัวตนสำเร็จ!");
+                changeStep(3);
+            } else {
+                alert("❌ รหัส OTP ไม่ถูกต้อง");
+            }
+        }
+
+        function resendOTP() {
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            alert(`📨 [ส่งใหม่]\nรหัส OTP ใหม่ของคุณคือ: ${generatedOTP}`);
+        }
+
+        // --- Step 3: บันทึกรหัสใหม่ ---
+        function saveNewPassword() {
+            const newPass = document.getElementById('new-password').value;
+            const confirmPass = document.getElementById('confirm-new-password').value;
+
+            if (newPass.length < 8) {
+                alert("⚠️ รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร");
+                return;
+            }
+            if (newPass !== confirmPass) {
+                alert("⚠️ รหัสผ่านไม่ตรงกัน");
+                return;
+            }
+
+            // บันทึกลง LocalStorage
+            let usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
+            if (verifiedUserIndex !== -1) {
+                usersDB[verifiedUserIndex].password = newPass;
+                localStorage.setItem('usersDB', JSON.stringify(usersDB));
+                
+                alert("🎉 เปลี่ยนรหัสผ่านเรียบร้อยแล้ว!\nกรุณาล็อกอินด้วยรหัสใหม่");
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Helper: เปลี่ยนหน้า Step
+        function changeStep(stepNum) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${stepNum}`).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

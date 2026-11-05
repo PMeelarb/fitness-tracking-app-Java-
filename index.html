@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดตารางออกกำลังกาย</title> 
+    
+    <script>
+        // ตรวจสอบการล็อกอิน
+        const userCheck = sessionStorage.getItem('currentUser');
+        if (!userCheck) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <link rel="icon" type="image/png" href="sutlogo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdqxqHDF1kx1eauj5CMjXzOvya_PL9b1s",
+            authDomain: "html-80dea.firebaseapp.com",
+            databaseURL: "https://html-80dea-default-rtdb.firebaseio.com",
+            projectId: "html-80dea",
+            storageBucket: "html-80dea.firebasestorage.app",
+            messagingSenderId: "539935314409",
+            appId: "1:539935314409:web:8a04fec151113e372d3b78",
+            measurementId: "G-W9WT2NWDPB"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+    </script>
+</head>
+<body>
+
+    <header class="sut-header">
+        <div class="header-inner">
+            <div class="header-brand">
+               <h1>Sut Sport</h1>
+                <span class="sub-text">ระบบจัดตารางออกกำลังกาย</span>
+            </div>
+            <nav class="header-nav">
+                <a href="#">หน้าแรก</a>
+                <a href="#">สมาชิก</a>
+                <a href="#">บริการ</a>
+                <a href="#">สถิติผู้ใช้บริการ</a>
+                <a href="#">เกี่ยวกับหน่วยงาน</a>
+                <a href="login.html" id="nav-auth-btn" class="btn-signin">Sign In</a>
+            </nav>
+            <div class="mobile-toggle"><i class="fas fa-bars"></i></div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h2>Fitness Room ระบบจัดตารางออกกำลังกาย</h2>
+        </div>
+
+        <div class="custom-tabs">
+            <div class="tab-item active" onclick="switchTab('calendar')">
+                <i class="far fa-calendar-alt"></i> ตารางปฏิทิน
+            </div>
+            <div class="tab-item" onclick="switchTab('list')">
+                <i class="fas fa-list-ul"></i> จัดตารางออกกำลังกาย
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            
+            <div id="calendar-view" class="view-section active">
+                <div class="calendar-controls">
+                    <button onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="current-month-year">ธันวาคม 2568</h3>
+                    <button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-header-row">
+                    <div>อา</div><div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div>
+                </div>
+                <div id="calendar-body" class="calendar-grid"></div>
+
+                <div style="text-align: center; margin-top: 20px; margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
+                    <button class="btn-summary" onclick="openSummaryModal()">สรุปผล (เดือนนี้)</button>
+                    <button class="btn-history" onclick="openHistoryModal()">📋 ประวัติย้อนหลัง</button>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <button class="btn-achievement-main" onclick="openAchievementModal()">
+                        <div class="star-icon-bg"><i class="fas fa-star"></i></div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-start; line-height: 1.2;">
+                            <span style="font-size: 1rem;">รางวัลความสำเร็จ</span>
+                            <span id="main-star-count" style="font-size: 0.8rem; color: #666; font-weight: normal;">
+                                สะสมแล้ว 0/8 ดวง
+                            </span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="list-view" class="view-section">
+                
+                <div id="admin-panel" style="display:none; margin: 0 auto 30px auto; max-width: 1000px; background: #333; padding: 20px; border-radius: 10px; color: white; border: 2px solid #ff4757; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <h3 style="margin-top:0; color: #ff4757; display:flex; align-items:center; gap:10px;">
+                        <i class="fas fa-user-shield"></i> ผู้ดูแลระบบ (Admin Mode)
+                    </h3>
+                    <p style="color:#ddd; font-size:0.9rem; margin-bottom:15px;">
+                        เพิ่มท่าออกกำลังกายใหม่เข้าสู่ระบบ (User ทุกคนจะเห็นท่านี้ทันที)
+                    </p>
+                    
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <select id="admin-muscle-group" style="padding: 10px; border-radius: 5px; border:none; outline:none; flex:1; min-width:150px;">
+                            <option value="chest">อก (Chest)</option>
+                            <option value="triceps">หลังแขน (Triceps)</option>
+                            <option value="shoulder">ไหล่ (Shoulder)</option>
+                            <option value="abs">ท้อง (Abs)</option>
+                            <option value="back">หลัง (Back)</option>
+                            <option value="biceps">หน้าแขน (Biceps)</option>
+                            <option value="legs">ขา (Legs)</option>
+                            <option value="calves">น่อง (Calves)</option>
+                            <option value="cardio">คาร์ดิโอ (Cardio)</option>
+                        </select>
+
+                        <input type="text" id="admin-ex-name" placeholder="ชื่อท่าออกกำลังกาย" style="padding: 10px; border-radius: 5px; flex: 2; border:none; outline:none; min-width:200px;">
+                        
+                        <input type="text" id="admin-ex-img" placeholder="วางลิงก์รูปภาพ (URL) ที่นี่" style="padding: 10px; border-radius: 5px; flex: 2; border:none; outline:none; min-width:200px;">
+                        
+                        <button onclick="adminAddExercise()" style="padding: 10px 20px; background: #ff4757; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                            <i class="fas fa-plus-circle"></i> เพิ่มลงระบบ
+                        </button>
+                    </div>
+
+                    <hr style="border-color: #555; margin: 20px 0;">
+                    <h4 style="color: #ff4757; margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-trash-alt"></i> รายการที่เพิ่มแล้ว (คลิก X มุมขวาบนรูปเพื่อลบ)
+                    </h4>
+                    <div id="admin-exercise-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:10px;">
+                        </div>
+                </div>
+                <div class="add-button-area">
+                    <button class="btn-circle-add" onclick="addNewTemplate()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <p>เพิ่มตารางออกกำลังกาย</p>
+                </div>
+                <div id="template-list" class="card-grid"></div>
+
+                <div class="backup-section">
+                    <h4 style="color:#666; margin-bottom:15px;">📥 จัดการข้อมูล (Backup & Restore)</h4>
+                    <div class="backup-btn-group">
+                        <button class="btn-export" onclick="exportData()">
+                            <i class="fas fa-download"></i> JSON (Backup)
+                        </button>
+                        <button class="btn-import" onclick="document.getElementById('import-file').click()">
+                            <i class="fas fa-upload"></i> Restore
+                        </button>
+                        <button class="btn-pdf" onclick="exportToPDF()">
+                            <i class="fas fa-file-pdf"></i> PDF (Report)
+                        </button>
+                        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(this)">
+                    </div>
+                    <p style="font-size:0.8rem; color:#999; margin-top:10px;">
+                        *แนะนำให้กดดาวน์โหลดไฟล์เก็บไว้ทุกสัปดาห์ เผื่อข้อมูลหาย
+                    </p>
+                </div>
+            </div>
+
+            <div id="create-view" class="content-view">
+                <div class="sub-header-text">เพิ่มตารางออกกำลังกาย</div>
+
+                <h3 class="section-title text-orange">เลือกสัดส่วนกล้ามเนื้อ</h3>
+                
+                <div class="muscle-hex-grid">
+                    <div class="hex-item" onclick="openMuscleModal('chest')">
+                        <div class="hex-img"><img src="อก.png" alt="อก"></div><span>อก</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('triceps')">
+                        <div class="hex-img"><img src="หลังแขน.png" alt="หลังแขน"></div><span>หลังแขน</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('shoulder')">
+                        <div class="hex-img"><img src="ไหล่.png" alt="ไหล่"></div><span>ไหล่</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('abs')">
+                        <div class="hex-img"><img src="ท้อง.png" alt="ท้อง"></div><span>แกนกลาง&ท้อง</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('back')">
+                        <div class="hex-img"><img src="หลัง.png" alt="หลัง"></div><span>หลัง</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('biceps')">
+                        <div class="hex-img"><img src="หน้าแขน.png" alt="หน้าแขน"></div><span>หน้าแขน</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('legs')">
+                        <div class="hex-img"><img src="ขา.png" alt="ขา"></div><span>ขา</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('calves')">
+                        <div class="hex-img"><img src="น่อง.png" alt="น่อง"></div><span>น่อง</span>
+                    </div>
+                    <div class="hex-item" onclick="openMuscleModal('cardio')">
+                        <div class="hex-img"><img src="คาดิโอ.png" alt="คาร์ดิโอ"></div><span>คาร์ดิโอ</span>
+                    </div>
+                </div>
+
+                <h3 class="section-title text-orange" style="margin-top:20px;">เพิ่มท่าออกกำลังกายของตัวเอง</h3>
+                <div class="input-exercise-row">
+                    <input type="text" id="input-ex-name" list="exercise-list" placeholder="ค้นหาชื่อท่า หรือ พิมพ์เอง" class="input-box big">
+                    <datalist id="exercise-list"></datalist>
+                    <input type="number" id="input-ex-set" placeholder="Set" class="input-box small">
+                    <input type="number" id="input-ex-rep" placeholder="Rep" class="input-box small">
+                    <input type="number" id="input-ex-kg" placeholder="Kg" class="input-box small">
+                </div>
+                <div class="btn-add-container">
+                    <button class="btn-add-manual" onclick="addManualExercise()">เพิ่ม</button>
+                </div>
+
+                <h3 class="section-title">ท่าออกกำลังกายที่เพิ่มแล้ว</h3>
+                <div class="schedule-name-wrapper">
+                    <i class="far fa-calendar-alt icon-left"></i>
+                    <input type="text" id="schedule-name" placeholder="เพิ่มชื่อตารางออกกำลังกาย" value="วันเล่นอก">
+                    <i class="fas fa-pencil-alt icon-right"></i>
+                </div>
+
+                <table class="exercise-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; padding-left:10px;">ชื่อท่า</th>
+                            <th width="50">รอบ<br>Set</th>
+                            <th width="50">ครั้ง<br>Rep</th>
+                            <th width="80">น้ำหนัก<br>รวมสองข้าง</th>
+                        </tr>
+                    </thead>
+                    <tbody id="added-exercise-list"></tbody>
+                </table>
+
+                <div class="auto-schedule-box">
+                    <h4>เลือกเพิ่มตารางแบบอัตโนมัติ</h4>
+                    <div class="repeat-row">
+                        <span>ทุกๆ</span>
+                        <select id="repeat-day" class="dropdown-day">
+                            <option value="">(เลือกวัน)</option>
+                            <option value="1">วันจันทร์</option>
+                            <option value="2">วันอังคาร</option>
+                            <option value="3">วันพุธ</option>
+                            <option value="4">วันพฤหัสบดี</option>
+                            <option value="5">วันศุกร์</option>
+                            <option value="6">วันเสาร์</option>
+                            <option value="0">วันอาทิตย์</option>
+                        </select>
+                        <span>ของเดือน</span>
+                    </div>
+
+                    <div class="date-section-title">เริ่มต้นและสิ้นสุดในวันอะไร</div>
+                    <div class="date-input-row">
+                        <label>เริ่มเพิ่มตารางตั้งแต่</label>
+                        <div class="date-input-wrapper">
+                            <i class="far fa-calendar-alt text-orange"></i>
+                            <input type="date" id="start-date-input">
+                        </div>
+                    </div>
+                    <div class="date-input-row">
+                        <label>สิ้นสุดการเพิ่มตาราง</label>
+                        <div class="date-input-wrapper">
+                            <i class="far fa-calendar-alt text-orange"></i>
+                            <input type="date" id="end-date-input">
+                        </div>
+                    </div>
+                    <div class="save-area">
+                        <button class="btn-save-schedule" onclick="saveNewSchedule()">บันทึกตาราง</button>
+                    </div>
+                </div>
+                <div style="height: 50px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exercise-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modal-date-title">รายละเอียด</span>
+                <span class="close-btn" onclick="closeModal('exercise-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modal-select-view" style="display: none;">
+                    <p style="text-align:center; color:#666; margin-bottom:15px; font-size:1.1rem;">วันนี้ต้องการฝึกตารางไหนครับ?</p>
+                    <div id="select-list-container" class="select-list-grid"></div>
+                </div>
+                <div id="modal-workout-view">
+                    <div class="schedule-card-modal">
+                        <div class="card-head">
+                            <h4 id="modal-workout-name" style="margin:0;">...</h4>
+                            <button class="btn-change" onclick="showSelectionView()"><i class="fas fa-exchange-alt"></i> เปลี่ยน</button>
+                        </div>
+                        <div id="modal-exercise-list" class="ex-list"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-delete" onclick="deleteSchedule()">ลบ</button>
+                <button class="btn-save-draft" onclick="saveProgress(false)">บันทึก</button>
+                <button class="btn-save" onclick="saveProgress(true)">เสร็จสิ้น</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="universalModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('universalModal')">&times;</span>
+            <h2 id="muscle-modal-title" style="text-align: center; margin-top: 10px;">...</h2>
+            <div id="slide-counter" style="text-align: center; font-size: 1.2rem; font-weight: bold; margin: 10px 0; color: #555;"></div>
+            <div class="slider-wrapper">
+                <button class="nav-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+                <div class="slider-container" id="universalSlider" style="display:flex; justify-content:center;"></div>
+                <button class="nav-btn next" onclick="moveSlide(1)">&#10095;</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="summaryModal" class="modal">
+        <div class="modal-content" style="text-align: center; padding-top: 40px;">
+            <h3 style="margin: 0; color: #333;">สรุปการออกกำลังกายเดือนนี้</h3>
+            <p id="summary-text-count" style="color: #666; margin: 10px 0; font-size: 1.1rem;">กำลังคำนวณ...</p>
+            <div class="progress-circle-container">
+                <div class="progress-circle" id="summary-progress-circle">
+                    <span id="summary-percent-text">0%</span>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #333; font-size: 0.9rem;">
+                *ระบบจะคำนวณเฉพาะวันที่คุณกดปุ่ม <span style="color:#2ecc71; font-weight:bold;">"เสร็จสิ้น"</span> แล้วเท่านั้น
+            </p>
+            <button class="btn-save" onclick="closeModal('summaryModal')" style="margin-top: 20px; width: 150px; background-color: #ffb900;">ย้อนกลับ</button>
+        </div>
+    </div>
+
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>ประวัติการฝึกทั้งหมด</span>
+                <span class="close-btn" onclick="closeModal('historyModal')">&times;</span>
+            </div>
+            <div class="modal-body" style="background-color: #f9f9f9; max-height: 60vh; overflow-y: auto;">
+                <div id="history-list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="timerModal" class="modal" style="z-index: 2000;">
+        <div class="modal-content" style="text-align: center; padding-top: 30px;">
+            <h3 style="color: #666; margin:0;">พักเซ็ต (Rest)</h3>
+            <div id="timer-display" style="font-size: 4.5rem; font-weight: bold; color: #e96b04; margin: 10px 0; font-family: monospace;">01:00</div>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;">
+                <button class="btn-timer-adjust" onclick="adjustTimer(-10)">-10s</button>
+                <button class="btn-timer-adjust" onclick="adjustTimer(10)">+10s</button>
+                <button class="btn-timer-adjust" onclick="adjustTimer(30)">+30s</button>
+            </div>
+            <button class="btn-skip" onclick="stopTimer()">เริ่มเซ็ตต่อไป (ปิด)</button>
+        </div>
+    </div>
+
+    <div id="achievementModal" class="modal">
+        <div class="modal-content" style="background: #f8f9fa; max-width: 450px; padding: 0;">
+            <div style="background: #333; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: white;">
+                <h3 style="margin:0; font-weight: 500;">
+                    <i class="fas fa-trophy" style="color: #ffb900;"></i> รางวัลความสำเร็จ
+                </h3>
+                <span class="close-btn" style="position:static; color:white !important; opacity:0.8;" onclick="closeModal('achievementModal')">&times;</span>
+            </div>
+
+            <div class="modal-body" style="padding: 15px; max-height: 70vh; overflow-y: auto;">
+                
+                <div class="achieve-section">
+                    <div class="achieve-icon"><img src="sutlogo.png" style="width:40px; opacity:0.8;"></div>
+                    <h4 class="achieve-header">ความสม่ำเสมอ (สะสม)</h4>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-days-10">0/10 วัน</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-days-10" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-days-10"></i>
+                        </div>
+                        <div class="achieve-desc">ออกกำลังกายครบ 10 วัน</div>
+                    </div>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-days-25">0/25 วัน</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-days-25" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-days-25"></i>
+                        </div>
+                        <div class="achieve-desc">ออกกำลังกายครบ 25 วัน</div>
+                    </div>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-days-50">0/50 วัน</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-days-50" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-days-50"></i>
+                        </div>
+                        <div class="achieve-desc">ออกกำลังกายครบ 50 วัน</div>
+                    </div>
+                </div>
+
+                <div class="achieve-section">
+                    <div class="achieve-icon"><i class="fas fa-running" style="font-size: 24px; color:#e96b04;"></i></div>
+                    <h4 class="achieve-header">เผาผลาญไขมัน (สะสม)</h4>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-cardio-100">0/100 นาที</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-cardio-100" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-cardio-100"></i>
+                        </div>
+                        <div class="achieve-desc">คาร์ดิโอครบ 100 นาที</div>
+                    </div>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-cardio-300">0/300 นาที</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-cardio-300" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-cardio-300"></i>
+                        </div>
+                        <div class="achieve-desc">คาร์ดิโอครบ 300 นาที</div>
+                    </div>
+                </div>
+
+                <div class="achieve-section">
+                    <div class="achieve-icon"><i class="fas fa-dumbbell" style="font-size: 24px; color:#e96b04;"></i></div>
+                    <h4 class="achieve-header">ภารกิจรายวัน (Daily Quest)</h4>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-daily-3">0/3 ท่า</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-daily-3" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-daily-3"></i>
+                        </div>
+                        <div class="achieve-desc">เล่นเวทให้ครบ 3 ท่า (วันนี้)</div>
+                    </div>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-daily-combo">0/2 เงื่อนไข</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-daily-combo" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-daily-combo"></i>
+                        </div>
+                        <div class="achieve-desc">เวทครบ 5 ท่า + คาร์ดิโอ 30 นาที</div>
+                    </div>
+
+                    <div class="achieve-item">
+                        <div class="achieve-info">
+                            <div class="achieve-bar-container">
+                                <span class="achieve-label" id="label-daily-all">ยังไม่ครบ</span>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="bar-daily-all" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <i class="fas fa-star star-status" id="star-daily-all"></i>
+                        </div>
+                        <div class="achieve-desc">เก็บครบทุกท่าตามตารางวันนี้!</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

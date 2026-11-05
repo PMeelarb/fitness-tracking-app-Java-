@@ -1,0 +1,691 @@
+:root {
+    /* เปลี่ยนเป็นสีเหลืองทอง (Yellow/Gold) */
+    --primary-color: #ffb900; /* สีเหลืองหลัก */
+    --primary-hover: #e0a800; /* สีเหลืองเข้ม (ตอนชี้) */
+    
+    --text-dark: #333;
+    --text-gray: #666;
+    --bg-light: #ffffff;
+    --border-gray: #ddd;
+}
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa; /* พื้นหลังเทาอ่อน */
+    color: var(--text-dark);
+}
+
+/* --- Header Style (SUT Theme) --- */
+.sut-header {
+    background-color: #333; /* Header สีเทาเข้ม */
+    color: var(--primary-color); /* ตัวหนังสือสีเหลือง */
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 1000;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.header-brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-brand h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+.header-brand .sub-text {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    display: block;
+    margin-top: 2px;
+    color: #ddd;
+}
+
+/* เมนู Desktop */
+.header-nav {
+    display: none; 
+    width: 100%;
+}
+
+.header-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+.header-nav a:hover {
+    color: var(--primary-color);
+}
+
+.header-nav .btn-signin {
+    background: var(--primary-color);
+    color: #333;
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.header-nav .btn-signin:hover {
+    background: var(--primary-hover);
+}
+
+.mobile-toggle {
+    display: block;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+/* --- Main Layout --- */
+.main-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+.page-header h2 {
+    font-weight: 400;
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
+/* --- Custom Tabs --- */
+.custom-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.tab-item {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    cursor: pointer;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-item:hover {
+    color: var(--primary-color);
+}
+
+.tab-item.active {
+    color: #333;
+    border-bottom: 3px solid var(--primary-color);
+    font-weight: 600;
+}
+
+/* --- Content Views --- */
+.view-section, .content-view {
+    display: none;
+    animation: fadeIn 0.4s;
+}
+.view-section.active, .content-view.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Tab 1: Calendar --- */
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.calendar-controls button {
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888;
+}
+.calendar-controls h3 { margin: 0; font-weight: 500; }
+
+.calendar-header-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day-box {
+    position: relative;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    min-height: 100px;
+}
+.day-box:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+/* วันปัจจุบัน (Today) */
+.day-box.today {
+    border: 2px solid var(--primary-color) !important;
+    background-color: #fffde7;
+    color: #333;
+    font-weight: bold;
+}
+
+/* ไอคอนสถานะ */
+.status-mark {
+    position: absolute;
+    bottom: 10px; right: 10px;
+    font-size: 1.2rem;
+}
+.status-mark.pending { color: var(--primary-color); opacity: 0.8; }
+.status-mark.completed { color: #2ecc71; }
+
+/* ตัวเลขเปอร์เซ็นต์ */
+.percent-badge {
+    position: absolute;
+    top: 5px; right: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    background-color: var(--primary-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    z-index: 10;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.percent-badge.full { background-color: #2ecc71; color: white; }
+
+.schedule-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #444;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    z-index: 1;
+}
+
+/* --- Tab 2: Manage List --- */
+.add-button-area { text-align: center; margin-bottom: 30px; }
+
+.btn-circle-add {
+    width: 60px; height: 60px;
+    background-color: var(--primary-color);
+    color: #333;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+}
+.btn-circle-add:hover { transform: scale(1.1); background-color: var(--primary-hover); }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* Card Style */
+.workout-card {
+    border: 1px solid #ddd;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 8px;
+    background: white;
+    padding: 15px;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.card-title {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; color: #333;
+    margin-bottom: 15px; border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+.card-title i { color: var(--primary-color); }
+
+.card-actions {
+    display: flex; flex-direction: column; gap: 5px;
+    position: absolute; right: 15px; top: 15px;
+}
+
+.action-btn {
+    padding: 2px 10px; border-radius: 4px; font-size: 0.75rem;
+    cursor: pointer; display: flex; align-items: center; gap: 5px; background: white;
+}
+.btn-edit { border: 1px solid #2ecc71; color: #2ecc71; }
+.btn-del { border: 1px solid #ff4757; color: #ff4757; }
+
+.ex-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.9rem; margin-bottom: 8px; color: #555;
+}
+.ex-row span:last-child { color: #333; font-weight: 500; }
+
+
+/* --- Modal General --- */
+.modal {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+    justify-content: center; align-items: center; z-index: 100;
+}
+.modal-content {
+    background: white; width: 90%; max-width: 400px;
+    border-radius: 10px; overflow: hidden; position: relative;
+}
+.modal-header {
+    padding: 15px; border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; font-weight: bold;
+    background-color: #333; color: white;
+}
+/* --- แก้ไขปุ่มปิด (Close Button) ให้ชัดเจน --- */
+.close-btn { 
+    cursor: pointer; 
+    font-size: 30px;       /* เพิ่มขนาดให้ใหญ่อีกนิด */
+    color: #d0ba29;           /* 🔴 เปลี่ยนเป็นสีเทาเข้มเกือบดำ (ให้เห็นชัดบนพื้นขาว) */
+    position: absolute;
+    top: 10px; 
+    right: 20px;
+    background: none; 
+    border: none;
+    z-index: 1001;         /* ดัน layer ขึ้นมาให้แน่ใจว่าอยู่บนสุด */
+    font-weight: bold;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.close-btn:hover { 
+    color: #e96b04;        /* เอาเมาส์ชี้แล้วเปลี่ยนเป็นสีส้ม/ทองตามธีม */
+    transform: scale(1.2); /* ขยายใหญ่ขึ้นนิดนึงตอนชี้ */
+}
+.modal-body { padding: 20px; }
+.schedule-card-modal { border: 1px solid #eee; padding: 15px; border-radius: 5px; }
+.card-head { 
+    color: #333; display: flex; justify-content: space-between; 
+    margin-bottom: 15px; border-bottom: 2px solid var(--primary-color); 
+    padding-bottom: 5px; align-items: center; 
+}
+
+.btn-change {
+    background: #fff; border: 1px solid var(--primary-color); color: #333;
+    padding: 4px 10px; border-radius: 15px; cursor: pointer;
+    font-size: 0.8rem; font-family: 'Sarabun', sans-serif; transition: all 0.2s;
+}
+.btn-change:hover { background: var(--primary-color); }
+
+.check-circle {
+    width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; color: white;
+}
+.check-circle.checked { background: #2ecc71; border-color: #2ecc71; }
+
+.modal-footer { padding: 15px; text-align: center; background-color: #f9f9f9; }
+
+.btn-save {
+    background: #2ecc71; border: none; color: white;
+    padding: 8px 30px; border-radius: 5px; cursor: pointer;
+}
+.btn-save:hover { background: #27ae60; }
+
+.btn-save-draft {
+    background: white; border: 1px solid var(--primary-color); color: var(--primary-hover);
+    padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;
+}
+.btn-save-draft:hover { background: var(--primary-color); color: #333; }
+
+.btn-delete {
+    background: white; border: 1px solid #ff4757; color: #ff4757;
+    padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;
+}
+.btn-delete:hover { background: #ff4757; color: white; }
+
+/* --- Modal: Select View List --- */
+.select-list-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+.btn-select-template {
+    background: white; border: 1px solid #ddd; border-radius: 8px;
+    padding: 15px 10px; cursor: pointer; text-align: center; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.btn-select-template:hover {
+    border-color: var(--primary-color); background-color: #fffde7;
+    transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.btn-select-template i { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 5px; }
+.btn-select-template span { font-size: 0.9rem; font-weight: bold; color: #333; }
+
+
+/* --- Create Schedule Styles --- */
+.sub-header-text { text-align: center; color: #666; margin: 10px 0; font-size: 0.9rem; }
+.section-title { text-align: center; font-size: 1.1rem; margin-bottom: 15px; font-weight: 600; }
+.text-orange { color: var(--primary-hover) !important; }
+
+.muscle-hex-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 15px; justify-items: center; padding: 0 10px;
+}
+.hex-item {
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer; transition: transform 0.2s;
+}
+.hex-item:active { transform: scale(0.95); }
+.hex-img {
+    width: 70px; height: 70px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: #eee; margin-bottom: 5px;
+}
+.hex-img img { width: 100%; height: 100%; object-fit: cover; }
+.hex-item span { font-size: 0.8rem; color: #333; font-weight: 500; }
+
+.input-exercise-row { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
+.input-box {
+    border: 1px solid #ccc; border-radius: 5px; padding: 8px;
+    font-family: 'Sarabun', sans-serif; text-align: center;
+}
+.input-box.big { flex: 2; text-align: left; }
+.input-box.small { flex: 1; min-width: 0; }
+
+.btn-add-container { text-align: center; margin-bottom: 30px; }
+.btn-add-manual {
+    background-color: var(--primary-color); color: #333; border: none;
+    padding: 8px 40px; border-radius: 5px; cursor: pointer;
+    font-size: 1rem; font-weight: bold;
+}
+
+.schedule-name-wrapper {
+    position: relative; margin-bottom: 10px; border: 1px solid #aaa;
+    border-radius: 5px; padding: 5px; display: flex; align-items: center;
+}
+.schedule-name-wrapper input {
+    width: 100%; border: none; padding: 8px 30px;
+    font-size: 1rem; color: #333; font-weight: bold; outline: none;
+    font-family: 'Sarabun', sans-serif;
+}
+.icon-left { position: absolute; left: 10px; color: var(--primary-color); font-size: 1.2rem; }
+.icon-right { position: absolute; right: 10px; color: var(--primary-color); }
+
+.exercise-table {
+    width: 100%; border-collapse: collapse; margin-bottom: 20px;
+    border-top: 2px solid var(--primary-color); border-bottom: 2px solid var(--primary-color);
+}
+.exercise-table th { font-size: 0.8rem; padding: 8px 2px; border-right: 1px solid #ccc; }
+.exercise-table td { padding: 10px 5px; font-size: 0.95rem; color: #333; border-right: 1px solid #ccc; text-align: center; }
+
+.btn-del-row { color: #ff4757; cursor: pointer; font-size: 1.2rem; margin-right: 5px; }
+
+/* Auto Schedule Box */
+.auto-schedule-box { text-align: center; max-width: 400px; margin: 20px auto; padding: 0 10px; }
+.auto-schedule-box h4 { margin: 0 0 15px 0; font-weight: 500; color: #333; }
+.date-section-title {
+    font-weight: bold; color: #333; margin-bottom: 15px;
+    border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 5px;
+}
+.date-input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.9rem; }
+.date-input-row label { color: #333; font-weight: 500; }
+.date-input-wrapper {
+    display: flex; align-items: center; border: 1px solid var(--primary-color);
+    border-radius: 20px; padding: 5px 15px; background: white; width: 160px;
+}
+.date-input-wrapper i { margin-right: 8px; font-size: 1.1rem; color: var(--primary-color); }
+.date-input-wrapper input { border: none; outline: none; width: 100%; background: transparent; }
+
+.save-area { text-align: center; }
+.btn-save-schedule {
+    background-color: var(--primary-color); color: #333; border: none;
+    padding: 12px 50px; border-radius: 5px; font-size: 1.1rem; font-weight: bold;
+    cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.btn-save-schedule:hover { background-color: var(--primary-hover); }
+
+
+/* Universal Modal */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);
+    z-index: 1000; justify-content: center; align-items: center;
+}
+#universalModal .modal-content {
+    background: white; width: 90%; max-width: 450px;
+    border-radius: 10px; padding: 20px; padding-top: 40px;
+    position: relative; max-height: 90vh; overflow-y: auto;
+}
+#universalModal h2 { text-align: center; margin: 0 0 20px 0; font-size: 1.3rem; color: #333; }
+
+.slider-wrapper { display: flex; align-items: center; justify-content: space-between; }
+.slider-container { display: flex; overflow-x: auto; gap: 20px; padding: 5px; width: 100%; scrollbar-width: none; }
+.slider-container::-webkit-scrollbar { display: none; }
+.nav-btn { background: none; border: none; font-size: 30px; cursor: pointer; color: #666; padding: 0 10px; }
+.exercise-card { min-width: 100%; display: flex; flex-direction: column; align-items: center; }
+.exercise-card img { width: 100%; max-height: 250px; object-fit: contain; margin-bottom: 15px; border-radius: 8px; }
+.input-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.input-row input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+
+.add-btn {
+    background-color: var(--primary-color); color: #333; border: none;
+    padding: 10px 40px; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold;
+}
+
+/* Responsive */
+@media screen and (min-width: 992px) {
+    .header-nav { display: block !important; width: auto; }
+    .mobile-toggle { display: none; }
+    .card-grid { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+}
+@media screen and (max-width: 991px) {
+    .header-nav {
+        display: none; width: 100%; flex-direction: column;
+        padding-bottom: 15px; background-color: #333;
+    }
+    .header-nav.active { display: flex; }
+    .header-nav a { border-top: 1px solid rgba(255,255,255,0.1); }
+    .header-nav .btn-signin { display: inline-block; width: auto; margin: 10px auto; }
+}
+
+/* ปุ่มสรุปผล */
+.btn-summary {
+    background: #333; color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 30px; border-radius: 25px; font-size: 1rem;
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+}
+.btn-summary:hover { background: var(--primary-color); color: #333; }
+
+/* Progress Circle */
+.progress-circle-container { display: flex; justify-content: center; margin-top: 30px; }
+.progress-circle {
+    width: 150px; height: 150px; border-radius: 50%;
+    background: conic-gradient(var(--primary-color) 0deg, #eee 0deg);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.progress-circle::before {
+    content: ""; position: absolute; width: 130px; height: 130px;
+    background-color: white; border-radius: 50%;
+}
+.progress-circle span { position: relative; font-size: 2.5rem; font-weight: bold; color: #333; z-index: 1; }
+
+/* History Button */
+.btn-history {
+    background: white; color: #666; border: 1px solid #ccc;
+    padding: 10px 20px; border-radius: 25px; font-size: 1rem;
+    cursor: pointer; font-family: 'Sarabun', sans-serif;
+}
+.history-month-title {
+    font-size: 1rem; font-weight: bold; color: #333;
+    margin: 15px 0 10px 0; padding-left: 10px;
+    border-left: 3px solid var(--primary-color); background: #eee;
+}
+.history-item {
+    background: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px;
+    border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+}
+.status-done { background: #dcfce7; color: #2ecc71; }
+.status-pending { background: #fff8f0; color: #d35400; }
+
+/* Backup Section */
+.backup-section { margin-top: 50px; padding-top: 20px; border-top: 1px dashed #ccc; text-align: center; }
+.backup-btn-group { display: flex; justify-content: center; gap: 15px; }
+.btn-export { background-color: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+.btn-import { background-color: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+.btn-pdf { background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+/* Timer */
+.btn-timer-adjust { background: #f0f0f0; border: 1px solid #ccc; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+.btn-skip {
+    background: #333; color: var(--primary-color); border: 1px solid var(--primary-color);
+    padding: 12px 40px; border-radius: 30px; font-size: 1.1rem; cursor: pointer;
+}
+.nav-btn.hidden { display: none !important; }
+
+/* ==========================================
+   Styles สำหรับหน้า Achievement (รางวัล)
+   ========================================== */
+
+/* ปุ่มใหญ่หน้าปฏิทิน */
+.btn-achievement-main {
+    background: white;
+    border: 2px solid var(--primary-color); /* ใช้สีเหลืองทอง */
+    border-radius: 50px;
+    padding: 5px 20px 5px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.btn-achievement-main:hover {
+    transform: translateY(-2px);
+    background: #fff8e1;
+}
+.star-icon-bg {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #ffc107, var(--primary-color));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.2rem;
+}
+.btn-achievement-main span {
+    font-family: 'Sarabun', sans-serif;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Modal Styling */
+.achieve-section {
+    margin-bottom: 25px;
+    text-align: center;
+}
+.achieve-icon {
+    width: 50px; height: 50px;
+    margin: 0 auto 5px auto;
+    display: flex; align-items: center; justify-content: center;
+}
+.achieve-header {
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    color: #333;
+    font-weight: bold;
+}
+
+/* รายการรางวัล */
+.achieve-item {
+    margin-bottom: 15px;
+}
+.achieve-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 2px;
+}
+.achieve-desc {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+    margin-right: 35px; /* เว้นที่ให้ตรงกับบาร์ */
+}
+
+/* Progress Bar Custom */
+.achieve-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.achieve-label {
+    font-size: 0.75rem;
+    color: var(--primary-hover); /* ใช้สีเหลืองเข้ม */
+    margin-bottom: 2px;
+    font-weight: bold;
+    user-select: none; /* ✅ เพิ่มบรรทัดนี้: ป้องกันการคลุมดำ/แถบสีฟ้า */
+    -webkit-user-select: none; /* สำหรับ Safari/Chrome มือถือ */
+}
+.progress-track {
+    width: 100%;
+    height: 12px;
+    background-color: #eee;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--primary-color), #ffc107); /* ไล่เฉดเหลืองทอง */
+    border-radius: 10px;
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+.progress-fill.completed {
+    background: linear-gradient(to right, #2ecc71, #27ae60); /* เขียวเมื่อเสร็จ */
+}
+
+/* ดาว */
+.star-status {
+    font-size: 1.5rem;
+    color: #ddd; /* สีเทาตอนยังไม่ได้ */
+    transition: color 0.5s, transform 0.5s;
+}
+.star-status.unlocked {
+    color: var(--primary-color); /* สีทอง */
+    text-shadow: 0 0 5px rgba(255, 185, 0, 0.5);
+    transform: scale(1.2);
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - สถานกีฬาและสุขภาพ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f8f9fa; /* พื้นหลังสีเทาอ่อน */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Sarabun', sans-serif;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 5px solid #ffb900; /* ขอบบนสีเหลือง */
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        .login-title {
+            font-size: 1.5rem;
+            color: #333; /* หัวข้อสีเข้ม */
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Sarabun', sans-serif;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #ffb900; /* โฟกัสกรอบสีเหลือง */
+            box-shadow: 0 0 5px rgba(255, 185, 0, 0.3);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffb900; /* ปุ่มสีเหลือง */
+            color: #333; /* ตัวหนังสือสีเข้ม (เพื่อความชัด) */
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login:hover {
+            background-color: #e0a800; /* เหลืองเข้มขึ้นตอนชี้ */
+        }
+        .forgot-pass {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+            text-align: right;
+        }
+        .forgot-pass a {
+            color: #666;
+            text-decoration: none;
+        }
+        .forgot-pass a:hover {
+            color: #ffb900;
+        }
+        .register-link {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .register-link a {
+            color: #ffb900; /* สีส้มเข้ม (หรือจะใช้เหลืองทองก็ได้) */
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <img src="sutlogo.png" alt="Logo" class="login-logo" onerror="this.src='https://via.placeholder.com/80x80?text=Logo'">
+        <div class="login-title">เข้าสู่ระบบ</div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>ชื่อผู้ใช้งาน (กรอกเป็นรหัสนักศึกษา เช่น B6xxxxxx)</label>
+                <input type="text" id="username" placeholder="sutgym" required>
+            </div>
+            <div class="input-group">
+                <label>รหัสผ่าน (Password)</label>
+                <input type="password" id="password" placeholder="...." required>
+            </div>
+            
+            <div class="forgot-pass"><a href="forgot.html">ลืมรหัสผ่าน?</a></div>
+
+            <button type="submit" class="btn-login" style="margin-top: 20px;">เข้าใช้งาน</button>
+        </form>
+
+        <div class="register-link">
+            ยังไม่มีบัญชีผู้ใช้? <a href="register.html">สมัครสมาชิก</a>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+    <script>
+        // ใส่ Script เดิมของคุณที่นี่ (หรือแยกไฟล์ก็ได้)
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if(username) {
+                const usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
+                const registeredUser = usersDB.find(u => u.username === username);
+                let userToLogin = null;
+
+                if (registeredUser) {
+                    if (registeredUser.password === password) {
+                        userToLogin = registeredUser;
+                    } else {
+                        alert("รหัสผ่านไม่ถูกต้อง!");
+                        return;
+                    }
+                } else {
+                    userToLogin = { username: username, fullname: username, role: 'member' };
+                }
+
+                sessionStorage.setItem('currentUser', JSON.stringify(userToLogin));
+                alert("เข้าสู่ระบบสำเร็จ!");
+                window.location.href = 'index.html';
+            } else {
+                alert("กรุณากรอกชื่อผู้ใช้งาน");
+            }
+        }
+    </script>
+
+</body>
+</html>
